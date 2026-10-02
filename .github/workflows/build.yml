@@ -28,14 +28,16 @@ jobs:
         run: flutter --version
 
       - name: Get dependencies
+        working-directory: flutter_app
         run: flutter pub get
 
       - name: Build Litchat Debug APK
+        working-directory: flutter_app
         run: flutter build apk --debug
 
       - name: Rename APK
         run: |
-          cp build/app/outputs/flutter-apk/app-debug.apk Litchat.apk
+          cp flutter_app/build/app/outputs/flutter-apk/app-debug.apk Litchat.apk
 
       - name: Upload Litchat APK
         uses: actions/upload-artifact@v4
