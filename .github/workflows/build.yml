@@ -24,18 +24,28 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Flutter version
-        run: flutter --version
+      - name: Find Flutter project
+        run: |
+          PROJECT_DIR=$(dirname "$(find . -name pubspec.yaml -not -path './.git/*' | head -n 1)")
+          
+          if [ -z "$PROJECT_DIR" ] || [ "$PROJECT_DIR" = "." ] && [ ! -f "pubspec.yaml" ]; then
+            echo "ERROR: pubspec.yaml not found!"
+            find . -maxdepth 4 -type f | head -100
+            exit 1
+          fi
+
+          echo "Flutter project found at: $PROJECT_DIR"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd "$PROJECT_DIR"
+          flutter pub get
 
       - name: Build Litchat APK
-        run: flutter build apk --debug
+        run: |
+          cd "$PROJECT_DIR"
+          flutter build apk --debug
 
-      - name: Upload Litchat APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Litchat-APK
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          if-no-files-found: error
+      - name: Find APK
+       
